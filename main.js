@@ -1,47 +1,50 @@
 // scripts/main.js
 
-// Intersection Observer: reveals elements with .fade-in as they enter the viewport.
-// This is lightweight and accessible (no motion when prefers-reduced-motion is set).
+// Anime.js + Intersection Observer: reveal elements with .fade-in as they enter the viewport.
 const prefersReducedMotion =
   window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-const revealEls = document.querySelectorAll('.fade-in');
-const canAnimate = 'IntersectionObserver' in window && !prefersReducedMotion;
+const fadeTargets = Array.from(document.querySelectorAll('.fade-in'));
+const hasObserver = 'IntersectionObserver' in window;
+const hasAnime = typeof anime !== 'undefined';
 
-if (canAnimate) {
+const runFadeIn = (target, delay = 0) => {
+  anime({
+    targets: target,
+    opacity: [0, 1],
+    translateY: [20, 0],
+    easing: 'easeOutQuad',
+    duration: 750,
+    delay,
+    complete: () => target.classList.add('visible'),
+  });
+};
+
+if (!prefersReducedMotion && hasObserver && hasAnime) {
   document.body.classList.add('motion');
 
   const observer = new IntersectionObserver(
     (entries) => {
       entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('visible');
-          // Optionally unobserve once revealed
-          observer.unobserve(entry.target);
-        }
+        if (!entry.isIntersecting) return;
+
+        const delay = Number(entry.target.dataset.delay || 0);
+        runFadeIn(entry.target, delay);
+        observer.unobserve(entry.target);
       });
     },
     {
       root: null,
-      threshold: 0.15, // reveal when ~15% is visible
+      threshold: 0.15,
       rootMargin: '0px 0px -40px 0px',
     }
   );
 
-  revealEls.forEach((el) => observer.observe(el));
+  fadeTargets.forEach((el, idx) => {
+    if (!el.dataset.delay) el.dataset.delay = idx * 60; // light stagger for down-cards
+    observer.observe(el);
+  });
 } else {
-  // Fallback for reduced-motion preference or older browsers
-  revealEls.forEach((el) => el.classList.add('visible'));
+  // Fallback for reduced-motion preference, older browsers, or missing Anime.js
+  document.body.classList.add('no-motion');
+  fadeTargets.forEach((el) => el.classList.add('visible'));
 }
-
-// Future: Swap to Anime.js Scroll Observer for richer effects
-// Example idea (not enabled yet):
-// anime.scrollObserver({
-//   targets: '.fade-in',
-//   enter: (el) => anime({
-//     targets: el,
-//     opacity: [0, 1],
-//     translateY: [-10, 0],
-//     easing: 'easeOutQuad',
-//     duration: 600
-//   })
-// });
