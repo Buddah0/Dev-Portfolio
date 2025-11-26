@@ -187,6 +187,89 @@ body {
 .skill-name { margin: 0; font-size: 1.1rem; font-weight: 700; color: #eaf2ff; }
 .skill-desc { margin: 0; color: var(--muted); }
 
+/* Projects */
+.projects {
+  background: radial-gradient(1200px 800px at 90% 0%, rgba(26, 32, 48, 0.35) 0%, transparent 50%), var(--bg);
+}
+.section-heading {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+.section-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(127, 209, 255, 0.12);
+  color: var(--accent);
+  font-weight: 700;
+  width: fit-content;
+  letter-spacing: 0.4px;
+}
+.section-lead {
+  margin: 0;
+  color: var(--muted);
+  max-width: 760px;
+}
+.projects-grid {
+  margin-top: 16px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 18px;
+}
+.project-card {
+  position: relative;
+  background: linear-gradient(180deg, #171c28 0%, #131826 100%);
+  border: 1px solid #232a3a;
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow: hidden;
+}
+.project-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(600px 260px at 20% 0%, rgba(127, 209, 255, 0.08), transparent 60%);
+  pointer-events: none;
+}
+.project-header { position: relative; z-index: 1; }
+.project-date {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 12px;
+  background: rgba(127, 209, 255, 0.14);
+  color: var(--accent);
+  font-weight: 700;
+  width: fit-content;
+}
+.project-title {
+  margin: 8px 0 4px;
+  font-size: 1.25rem;
+  color: #eaf2ff;
+}
+.project-subtitle {
+  margin: 0 0 4px;
+  color: var(--accent-2);
+  font-weight: 600;
+}
+.project-desc {
+  position: relative;
+  margin: 0;
+  color: var(--text);
+  line-height: 1.7;
+  z-index: 1;
+}
+.project-desc strong { color: #ffffff; }
+
 /* Footer */
 .footer {
   padding: 48px 0;
@@ -208,11 +291,18 @@ body {
   will-change: opacity, transform;
 }
 
-/* When visible, transition in */
+/* When visible, set the final state (Anime.js drives the motion) */
 .fade-in.visible {
   opacity: 1;
   transform: translateY(0);
-  transition: opacity 600ms ease-out, transform 600ms ease-out;
+}
+
+/* Fallback: keep content visible if motion is disabled */
+.no-motion .fade-in,
+.no-motion .fade-in.visible {
+  opacity: 1;
+  transform: none;
+  transition: none;
 }
 
 /* Original provided snippet for reference (not used directly as-is)
